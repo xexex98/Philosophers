@@ -6,7 +6,7 @@
 #    By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/31 14:18:51 by mbarra            #+#    #+#              #
-#    Updated: 2022/01/31 19:50:44 by mbarra           ###   ########.fr        #
+#    Updated: 2022/01/31 20:35:52 by mbarra           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,11 +22,9 @@ SRC_DIR		=		./src
 
 OBJ			=		$(patsubst %.c, %.o, $(SRC))
 
-OBJ_DIR		=		./obj
-
 CC			=		gcc
 RM			=		rm -f
-CFLAGS		=		-Wall -Wextra -Werror -O2
+CFLAGS		=		-Wall -Wextra #-Werror -O2
 
 %.o: %.c $(HDR)
 	@$(CC) $(CFLAGS) -c $< -o $@
@@ -37,8 +35,6 @@ $(NAME): $(OBJ)
 	@$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 	@$(RM) $(SRC_DIR)/*.o
 
-$(OBJ_DIR):
-	mkdir -p $(OBJ_DIR)
 
 clean:
 	@$(RM) $(OBJ)
@@ -53,3 +49,6 @@ re: f all
 # OBJ_LIST			=		$(addprefix $(OBJ_DIR)/, $(OBJ_LIST))
 # rm -rf $(OBJ_DIR)
 # @echo $(OBJ)
+# $(OBJ_DIR):
+# mkdir -p $(OBJ_DIR)
+# OBJ_DIR		=		./obj
