@@ -6,45 +6,11 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 19:50:05 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/01 20:57:52 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/02/02 16:09:47 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/philo.h"
-
-long int	ft_atoi(const char *nptr)
-{
-	long	minus;
-	long	i;
-	long	num;
-
-
-	if (nptr == NULL)
-		return (0); //exit (0);
-
-	i = 0;
-	minus = 1;
-	num = 0;
-	while (nptr[i] == ' ' || (nptr[i] >= 9 && nptr[i] <= 13))
-		i++;
-	if (nptr[i] == '-' || nptr[i] == '+')
-	{
-		if (nptr[i] == '-')
-			minus = -1;
-		i++;
-	}
-	while (nptr[i] && nptr[i] >= '0' && nptr[i] <= '9')
-		num = num * 10 + nptr[i++] - '0';
-	if (num < 0)
-	{
-		if (minus == 1)
-			return (-1);
-		else if (minus == -1)
-			return (0);
-	}
-	return (num * minus);
-}
-
 
 void	*potok(void *argv)
 {
@@ -76,37 +42,6 @@ void	*potok2(void *argv)
 // pthread_mutex_init,
 // pthread_mutex_destroy,
 
-typedef struct s_p
-{
-	int		left_fork;
-	int		right_fork;
-}				t_p;
-
-
-typedef struct s_all
-{
-	int		nop;
-	int		ttd;
-	int		tte;
-	int		tts;
-	int		pme;
-
-	t_p		**philos;
-}				t_all;
-
-
-
-
-void	ft_error(int err)
-{
-	if (err == 1)
-		printf("Run as: NOP, TTD(ms), TTE(ms), TTS(ms), PME(optional)\n");
-	if (err == 2)
-		printf("Malloc error!\n");
-	exit(0);
-}
-
-
 void	ft_init_all(t_all *all, char **argv)
 {
 	all->nop = ft_atoi(argv[1]);
@@ -116,26 +51,31 @@ void	ft_init_all(t_all *all, char **argv)
 	if (argv[5] != NULL)
 		all->pme = ft_atoi(argv[5]);
 	else
-		all->pme = 0;
+		all->pme = -1;
 }
 
+void ft_init_p(t_p	*p)
+{
+	p->left_fork = 3;
+	p->right_fork = 0;
 
+}
 
-void	create_philos(t_all	*all)
+int	create_philos(t_all	*all)
 {
 	t_p		*p;
 	int		i;
 
-	i = -1;
-	all->philos = (t_p **)malloc(sizeof(t_p));
+	all->philos = (t_p **)malloc(sizeof(t_p) * all->nop);
 	p = (t_p *)malloc(sizeof(t_p));
-	if (p == NULL || all->philos == NULL)
-		ft_error(2);
+	if (!p || !all->philos)
+		return (-1);
+	ft_init_p(p);
+	i = -1;
 	while (++i < all->nop)
-	{
-		
-	}
-	
+		all->philos[i] = p;
+	free(p);
+	return (0);
 }
 
 int main(int argc, char **argv)
@@ -143,22 +83,22 @@ int main(int argc, char **argv)
 	// pthread_t	tid;
 	t_all	all;
 
-
-
 	if (argc < 5 || argc > 6)
-		ft_error(1);
-
+		return (ft_error(1));
+	if (ft_argv_is_num(argv) < 0)
+		return (ft_error(3));
 	ft_init_all(&all, argv);
+	if (create_philos(&all) < 0)
+		return (ft_error(2));
 
-	int i = 0;
-	while (i < 5)
-	{
-		all.philos[i] = p;
-		i++;
-	}
+	// int i = 3;
+	// printf ("%i", i);
 
-	printf("%d\n", all.philos[1]->left_fork);
-	// printf("%d\n", all->philos[0]->ttd);
+
+	// for (int i = 0; i < 0; i++)
+	// printf("%d\n", all.pme);
+
+	// printf("%d\n", all.philos[3]->left_fork);
 
 	// pthread_create(&tid1, NULL, potok, argv[1]);
 	// pthread_create(&tid2, NULL, potok2, argv[2]);
