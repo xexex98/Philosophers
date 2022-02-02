@@ -6,7 +6,7 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 15:29:58 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/02 16:08:05 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/02/02 16:42:31 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,4 +72,39 @@ int	ft_argv_is_num(char	**argv)
 		j++;
 	}
 	return (1);
+}
+
+int	create_philos(t_all	*all)
+{
+	t_p		*p;
+	int		i;
+
+	all->philos = (t_p **)malloc(sizeof(t_p) * all->nop);
+	p = (t_p *)malloc(sizeof(t_p));
+	if (!p || !all->philos)
+		return (-1);
+	ft_init_p(p);
+	i = -1;
+	while (++i < all->nop)
+		all->philos[i] = p;
+	free(p);
+	return (0);
+}
+
+void	ft_init_all(t_all *all, char **argv)
+{
+	all->nop = ft_atoi(argv[1]);
+	all->ttd = ft_atoi(argv[2]);
+	all->tte = ft_atoi(argv[3]);
+	all->tts = ft_atoi(argv[4]);
+	if (argv[5] != NULL)
+		all->pme = ft_atoi(argv[5]);
+	else
+		all->pme = -1;
+}
+
+void ft_init_p(t_p	*p)
+{
+	p->left_fork = 3;
+	p->right_fork = 0;
 }

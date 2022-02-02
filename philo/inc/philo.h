@@ -6,7 +6,7 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 14:36:23 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/02 15:49:29 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/02/02 16:42:49 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,9 @@ typedef struct s_all
 int		ft_error(int err);
 long	ft_atoi(const char *nptr);
 int		ft_argv_is_num(char	**argv);
+int		create_philos(t_all	*all);
+void	ft_init_all(t_all *all, char **argv);
+void	ft_init_p(t_p	*p);
 
 
 #endif
