@@ -6,7 +6,7 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 14:36:23 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/02 16:42:49 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/02/03 17:52:57 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,20 +21,20 @@
 
 typedef struct s_p
 {
-	int		left_fork;
-	int		right_fork;
+	int				pid;
+	pthread_t		tid;
 }				t_p;
-
 
 typedef struct s_all
 {
-	int		nop;
-	int		ttd;
-	int		tte;
-	int		tts;
-	int		pme;
+	pthread_mutex_t	forks[5];
+	int				nop;
+	int				ttd;
+	int				tte;
+	int				tts;
+	int				pme;
 
-	t_p		**philos;
+	t_p				*philos;
 }				t_all;
 
 int		ft_error(int err);

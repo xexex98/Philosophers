@@ -36,8 +36,7 @@ int main(int argn, char **argv)
 	return 0;
 }
 
-void *
-philosopher(void *num)
+void *philosopher(void *num)
 {
 	int id;
 	int i, left_chopstick, right_chopstick, f;
@@ -47,21 +46,15 @@ philosopher(void *num)
 	right_chopstick = id;
 	left_chopstick = id + 1;
 
-	/* Wrap around the chopsticks. */
 	if (left_chopstick == PHILOS)
 		left_chopstick = 0;
 
 	while (f == food_on_table())
 	{
-
-		/* Thanks to philosophers #1 who would like to take a nap
-		 * before picking up the chopsticks, the other philosophers
-		 * may be able to eat their dishes and not deadlock.
-		 */
 		if (id == 1)
 			sleep(sleep_seconds);
 
-		grab_chopstick(id, right_chopstick, "right ");
+		grab_chopstick(id, right_chopstick, "right");
 		grab_chopstick(id, left_chopstick, "left");
 
 		printf("Philosopher %d: eating.\n", id);
@@ -88,16 +81,13 @@ int food_on_table()
 	return myfood;
 }
 
-void grab_chopstick(int phil,
-					int c,
-					char *hand)
+void grab_chopstick(int phil, int c, char *hand)
 {
 	pthread_mutex_lock(&chopstick[c]);
 	printf("Philosopher %d: got %s chopstick %d\n", phil, hand, c);
 }
 
-void down_chopsticks(int c1,
-					 int c2)
+void down_chopsticks(int c1, int c2)
 {
 	pthread_mutex_unlock(&chopstick[c1]);
 	pthread_mutex_unlock(&chopstick[c2]);

@@ -6,23 +6,11 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 15:29:58 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/02 16:42:31 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/02/03 17:28:09 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/philo.h"
-
-int	ft_strlen(char *str)
-{
-	int	i;
-
-	if (!str)
-		return (0);
-	i = 0;
-	while (str[i])
-		i++;
-	return (i);
-}
 
 int	ft_error(int err)
 {
@@ -74,23 +62,6 @@ int	ft_argv_is_num(char	**argv)
 	return (1);
 }
 
-int	create_philos(t_all	*all)
-{
-	t_p		*p;
-	int		i;
-
-	all->philos = (t_p **)malloc(sizeof(t_p) * all->nop);
-	p = (t_p *)malloc(sizeof(t_p));
-	if (!p || !all->philos)
-		return (-1);
-	ft_init_p(p);
-	i = -1;
-	while (++i < all->nop)
-		all->philos[i] = p;
-	free(p);
-	return (0);
-}
-
 void	ft_init_all(t_all *all, char **argv)
 {
 	all->nop = ft_atoi(argv[1]);
@@ -103,8 +74,20 @@ void	ft_init_all(t_all *all, char **argv)
 		all->pme = -1;
 }
 
-void ft_init_p(t_p	*p)
+int	create_philos(t_all	*all)
 {
-	p->left_fork = 3;
-	p->right_fork = 0;
+	int		i;
+	
+	all->philos = (t_p *)malloc(sizeof(t_p) * all->nop);
+	if (!all->philos)
+		ft_error(2);
+	i = -1;
+	while (++i < all->nop)
+	{
+		all->philos[i].pid = i + 1;
+		// all->philos[i].tid = 
+		// all->philos[i].left_fork = 0;
+		// all->philos[i].right_fork = 0;
+	}
+	return (0);
 }
