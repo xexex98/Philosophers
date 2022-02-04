@@ -6,12 +6,11 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 19:50:05 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/03 17:56:01 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/02/04 13:04:50 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/philo.h"
-
 // memset, 
 // usleep, 
 // gettimeofday, 
@@ -29,9 +28,13 @@ void	*ft_eat(void *arg)
 	
 	all = (t_all *)arg;
 
-	pthread_mutex_lock(&all->forks[0]);
-	printf("|sleep|\n");
-	pthread_mutex_unlock(&all->forks[0]);
+	// if 
+	// pthread_mutex_lock(&all->forks[id]);
+	// pthread_mutex_lock(&all->forks[id + 1]);
+	// printf("|sleep|\n");
+	// pthread_mutex_unlock(&all->forks[0]);
+	// pthread_mutex_unlock(&all->forks[1]);
+
 	return NULL;
 }
 
@@ -52,18 +55,30 @@ void	ft_philo_is_thread(t_all *all)
 
 }
 
+int	ft_time(void)
+{
+	struct timeval time;
+
+	int	i;
+	i = gettimeofday(&time, NULL);
+	printf("%i\n", i);
+	i = gettimeofday(&time, NULL);
+
+	return 0;
+}
 int main(int argc, char **argv)
 {
 	t_all	all;
 
-	// all.forks = malloc(100000);
-	if (argc < 5 || argc > 6)
-		return (ft_error(1));
-	if (ft_argv_is_num(argv) < 0)
-		return (ft_error(3));
-	ft_init_all(&all, argv);
-	if (create_philos(&all) < 0)
-		return (ft_error(2));
-	ft_philo_is_thread(&all);
-	return (0);
+
+	ft_time();
+// 	if (argc < 5 || argc > 6)
+// 		return (ft_error(1));
+// 	if (ft_argv_is_num(argv) < 0)
+// 		return (ft_error(3));
+// 	ft_init_all(&all, argv);
+// 	if (create_philos(&all) < 0)
+// 		return (ft_error(2));
+// 	ft_philo_is_thread(&all);
+// 	return (0);
 }
