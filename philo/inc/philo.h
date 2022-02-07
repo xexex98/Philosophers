@@ -6,7 +6,7 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 14:36:23 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/04 12:30:19 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/02/07 18:49:23 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,16 +34,18 @@ typedef struct s_all
 	int				tte;
 	int				tts;
 	int				pme;
-
+	long long		start;		
 	t_p				*philos;
 }				t_all;
 
-int		ft_error(int err);
-long	ft_atoi(const char *nptr);
-int		ft_argv_is_num(char	**argv);
-int		create_philos(t_all	*all);
-void	ft_init_all(t_all *all, char **argv);
-void	ft_init_p(t_p	*p);
-
+int			ft_error(int err);
+long		ft_atoi(const char *nptr);
+int			ft_argv_is_num(char	**argv);
+int			create_philos(t_all	*all);
+void		ft_init_all(t_all *all, char **argv);
+void		ft_init_p(t_p	*p);
+long long	ft_time(void);
+void		*philo(void *arg);
+void		ft_philo_is_thread(t_all *all);
 
 #endif

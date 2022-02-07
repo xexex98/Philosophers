@@ -6,7 +6,7 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 15:29:58 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/03 17:28:09 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/02/07 18:48:57 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,9 +85,32 @@ int	create_philos(t_all	*all)
 	while (++i < all->nop)
 	{
 		all->philos[i].pid = i + 1;
-		// all->philos[i].tid = 
-		// all->philos[i].left_fork = 0;
-		// all->philos[i].right_fork = 0;
 	}
 	return (0);
+}
+
+long long	ft_time(void)
+{
+	struct timeval time;
+	
+	gettimeofday(&time, NULL);
+	
+	return ((long long)time.tv_sec * 1000 + time.tv_usec / 1000);
+}
+
+void	ft_philo_is_thread(t_all *all)
+{
+	int	i;
+	long long	start;
+
+	i = -1;
+	all->start = ft_time();
+	while (++i < all->nop)
+		pthread_mutex_init(&all->forks[i], NULL);
+	i = -1;
+	while (++i < all->nop)
+		pthread_create(&all->philos[i].tid, NULL, philo, all);
+	i = -1;
+	while (++i < all->nop)
+		pthread_join(all->philos[i].tid, NULL);
 }

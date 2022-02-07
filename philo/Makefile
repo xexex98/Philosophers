@@ -6,7 +6,7 @@
 #    By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/31 14:18:51 by mbarra            #+#    #+#              #
-#    Updated: 2022/02/03 11:36:01 by mbarra           ###   ########.fr        #
+#    Updated: 2022/02/04 17:16:46 by mbarra           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ OBJ			=		$(patsubst %.c, %.o, $(SRC))
 
 CC			=		gcc
 RM			=		rm -f
-CFLAGS		=		-g #-Wall -Wextra #-Werror -O2
+CFLAGS		=		-pthread #-Wall -Wextra #-Werror -O2
 
 %.o: %.c $(HDR)
 	@$(CC) $(CFLAGS) -c $< -o $@
