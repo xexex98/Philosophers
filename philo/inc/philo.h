@@ -6,7 +6,7 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 14:36:23 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/07 18:49:23 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/02/08 17:33:53 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,18 +23,23 @@
 typedef struct s_p
 {
 	int				pid;
+	int				lf;
+	int				rf;
+	long long		lm;
 	pthread_t		tid;
 }				t_p;
-
+// у тебя тут 5 не забудь при запуске
 typedef struct s_all
 {
-	pthread_mutex_t	forks[5];
+	pthread_mutex_t	*forks;
 	int				nop;
 	int				ttd;
 	int				tte;
 	int				tts;
 	int				pme;
-	long long		start;		
+	int				f;
+	long long		start;
+	long long		timestamp;
 	t_p				*philos;
 }				t_all;
 
@@ -47,5 +52,9 @@ void		ft_init_p(t_p	*p);
 long long	ft_time(void);
 void		*philo(void *arg);
 void		ft_philo_is_thread(t_all *all);
+long long	ft_timestamp(t_all *all);
+void	ft_eat(t_p *philos);
+void	ft_sleep(int philosophernum, t_all *all);
+void	ft_think(int philosophernum, t_all *all);
 
 #endif

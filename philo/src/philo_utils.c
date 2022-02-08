@@ -6,7 +6,7 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 15:29:58 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/07 18:48:57 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/02/08 16:25:22 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ void	ft_init_all(t_all *all, char **argv)
 		all->pme = ft_atoi(argv[5]);
 	else
 		all->pme = -1;
+	all->f = 0;
 }
 
 int	create_philos(t_all	*all)
@@ -85,6 +86,9 @@ int	create_philos(t_all	*all)
 	while (++i < all->nop)
 	{
 		all->philos[i].pid = i + 1;
+		all->philos[i].lm = 0;
+		all->philos[i].lf = i;
+		all->philos[i].rf = (i + 1) % all->nop;
 	}
 	return (0);
 }
@@ -98,18 +102,23 @@ long long	ft_time(void)
 	return ((long long)time.tv_sec * 1000 + time.tv_usec / 1000);
 }
 
+long long	ft_timestamp(t_all *all)
+{
+	return (ft_time() - all->start);
+}
+
 void	ft_philo_is_thread(t_all *all)
 {
 	int	i;
-	long long	start;
 
 	i = -1;
 	all->start = ft_time();
+
 	while (++i < all->nop)
 		pthread_mutex_init(&all->forks[i], NULL);
 	i = -1;
 	while (++i < all->nop)
-		pthread_create(&all->philos[i].tid, NULL, philo, all);
+		pthread_create(&all->philos[i].tid, NULL, philo, (void *)&all->philos[i]);
 	i = -1;
 	while (++i < all->nop)
 		pthread_join(all->philos[i].tid, NULL);
