@@ -6,28 +6,16 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 19:50:05 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/09 14:07:45 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/02/09 17:56:23 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/philo.h"
 # define FORK "has taken a fork\n"
-# define FORKT "put the forks on the table\n"
 # define EAT "is eating\n"
 # define SLEEP "is sleeping\n"
 # define THINK "is thinking\n"
 # define DIED "died\n"
-
-
-pthread_mutex_t	print;
-pthread_mutex_t	queue;
-
-void	ft_printf(t_all *all, long long time, int pid, char *str)
-{
-	pthread_mutex_lock(&all->print);
-	printf("%lli %i %s\n", time, pid, str);
-	pthread_mutex_unlock(&all->print);
-}
 
 void	ft_forks_in_hand(t_p *philos)
 {
@@ -41,9 +29,7 @@ void	ft_forks_in_hand(t_p *philos)
 void	ft_forks_on_the_table(t_p *philos)
 {
 	pthread_mutex_unlock(&philos->all->forks[philos->lf]);
-	// ft_printf(philos->all, ft_timestamp(philos->all), philos->pid, FORKT);
 	pthread_mutex_unlock(&philos->all->forks[philos->rf]);
-	// ft_printf(philos->all, ft_timestamp(philos->all), philos->pid, FORKT);
 	return ;
 }
 
@@ -53,21 +39,42 @@ void	ft_think(t_p *philos)
 	return ;
 }
 
-void	ft_eat(t_p *philos)
-{
-	ft_forks_in_hand(philos);
-	ft_printf(philos->all, ft_timestamp(philos->all), philos->pid, EAT);
-	philos->lm = ft_time();
-	usleep(philos->all->tte * 1000);
-	ft_forks_on_the_table(philos);
-	return ;
-}
-
 void	ft_sleep(t_p *philos)
 {
 	ft_printf(philos->all, ft_timestamp(philos->all), philos->pid, SLEEP);
 	usleep(philos->all->tts * 1000);
-	return	;
+	return ;
+}
+
+void	ft_eat(t_p *philos)
+{
+	ft_forks_in_hand(philos);
+	ft_printf(philos->all, ft_timestamp(philos->all), philos->pid, EAT);
+	usleep(philos->all->tte * 1000);
+	philos->lm = ft_time();
+	ft_forks_on_the_table(philos);
+	return ;
+}
+
+pthread_mutex_t	queue;
+void	*ft_dead(void *arg)
+{
+	t_p *philos;
+
+	philos = (t_p *)arg;
+	printf("||%i||\n", philos->pid);
+	while (philos->all->f != -1)
+	{
+		pthread_mutex_lock(&queue);
+		if (philos->all->ttd < ft_time() - philos->lm)
+		{
+			ft_printf(philos->all, ft_timestamp(philos->all), philos->pid, DIED);
+			philos->all->f = -1;
+		}
+		pthread_mutex_unlock(&queue);
+		usleep(100);
+	}
+	return (NULL);
 }
 
 void	*ft_meal(void *arg)
@@ -75,9 +82,8 @@ void	*ft_meal(void *arg)
 	t_p	*philos;
 
 	philos = (t_p *)arg;
-	unsigned int i = 5;
-	// while (i--)
-	while (1)
+	
+	while (philos->all->f != -1)
 	{
 		ft_think(philos);
 		ft_eat(philos);

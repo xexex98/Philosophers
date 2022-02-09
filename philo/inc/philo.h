@@ -6,7 +6,7 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 14:36:23 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/09 14:02:47 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/02/09 17:44:42 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ typedef struct s_p
 	int				rf;
 	long long		lm;
 	pthread_t		tid;
+	pthread_t		death;
 	struct s_all	*all;
 }				t_p;
 
@@ -54,9 +55,14 @@ long long	ft_time(void);
 void		*ft_meal(void *arg);
 void		ft_philo_is_thread(t_all *all);
 long long	ft_timestamp(t_all *all);
-void	ft_eat(t_p *philos);
-void	ft_sleep(t_p *philos);
-void	ft_think(t_p *philos);
+void		ft_eat(t_p *philos);
+void		ft_sleep(t_p *philos);
+void		ft_think(t_p *philos);
+void		*ft_dead(void *arg);
+void	ft_printf(t_all *all, long long time, int pid, char *str);
+
+
+
 // void	ft_printf(t_p *philos, long long time, int pid, char *str);
 
 #endif

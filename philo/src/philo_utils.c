@@ -6,7 +6,7 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 15:29:58 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/09 13:19:17 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/02/09 17:49:50 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,22 @@ void	ft_philo_is_thread(t_all *all)
 	i = -1;
 	while (++i < all->nop)
 		pthread_create(&all->philos[i].tid, NULL, ft_meal, (void *)&all->philos[i]);
+
+	i = -1;
+	while (++i < all->nop)
+		pthread_create(&all->philos[i].death, NULL, ft_dead, (void *)&all->philos[i]);
 	i = -1;
 	while (++i < all->nop)
 		pthread_join(all->philos[i].tid, NULL);
+	i = -1;
+	while (++i < all->nop)
+		pthread_join(all->philos[i].death, NULL);
+}
+
+void	ft_printf(t_all *all, long long time, int pid, char *str)
+{
+	pthread_mutex_lock(&all->print);
+	printf("%lli %i %s\n", time, pid, str);
+	pthread_mutex_unlock(&all->print);
+	return ;
 }
