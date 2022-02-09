@@ -6,7 +6,7 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 15:29:58 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/08 16:25:22 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/02/09 13:19:17 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,37 +62,6 @@ int	ft_argv_is_num(char	**argv)
 	return (1);
 }
 
-void	ft_init_all(t_all *all, char **argv)
-{
-	all->nop = ft_atoi(argv[1]);
-	all->ttd = ft_atoi(argv[2]);
-	all->tte = ft_atoi(argv[3]);
-	all->tts = ft_atoi(argv[4]);
-	if (argv[5] != NULL)
-		all->pme = ft_atoi(argv[5]);
-	else
-		all->pme = -1;
-	all->f = 0;
-}
-
-int	create_philos(t_all	*all)
-{
-	int		i;
-	
-	all->philos = (t_p *)malloc(sizeof(t_p) * all->nop);
-	if (!all->philos)
-		ft_error(2);
-	i = -1;
-	while (++i < all->nop)
-	{
-		all->philos[i].pid = i + 1;
-		all->philos[i].lm = 0;
-		all->philos[i].lf = i;
-		all->philos[i].rf = (i + 1) % all->nop;
-	}
-	return (0);
-}
-
 long long	ft_time(void)
 {
 	struct timeval time;
@@ -107,18 +76,52 @@ long long	ft_timestamp(t_all *all)
 	return (ft_time() - all->start);
 }
 
+void	ft_init_all(t_all *all, char **argv)
+{
+
+	all->nop = ft_atoi(argv[1]);
+	all->ttd = ft_atoi(argv[2]);
+	all->tte = ft_atoi(argv[3]);
+	all->tts = ft_atoi(argv[4]);
+	if (argv[5] != NULL)
+		all->pme = ft_atoi(argv[5]);
+	else
+		all->pme = -1;
+	all->f = 0;
+	all->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * all->nop);
+
+}
+
+int	create_philos(t_all	*all)
+{
+	int		i;
+	
+	all->philos = (t_p *)malloc(sizeof(t_p) * all->nop);
+	if (!all->philos)
+		ft_error(2);
+	i = -1;
+	while (++i < all->nop)
+	{
+		all->philos[i].all = all;
+		all->philos[i].pid = i + 1;
+		all->philos[i].lm = 0;
+		all->philos[i].lf = i;
+		all->philos[i].rf = (i + 1) % all->nop;
+	}
+	return (0);
+}
+
 void	ft_philo_is_thread(t_all *all)
 {
 	int	i;
 
 	i = -1;
 	all->start = ft_time();
-
 	while (++i < all->nop)
 		pthread_mutex_init(&all->forks[i], NULL);
 	i = -1;
 	while (++i < all->nop)
-		pthread_create(&all->philos[i].tid, NULL, philo, (void *)&all->philos[i]);
+		pthread_create(&all->philos[i].tid, NULL, ft_meal, (void *)&all->philos[i]);
 	i = -1;
 	while (++i < all->nop)
 		pthread_join(all->philos[i].tid, NULL);
