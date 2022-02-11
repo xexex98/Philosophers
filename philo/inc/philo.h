@@ -6,7 +6,7 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 14:36:23 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/09 17:44:42 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/02/11 18:08:09 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ typedef struct s_p
 	long long		lm;
 	pthread_t		tid;
 	pthread_t		death;
+	pthread_mutex_t	eating;
 	struct s_all	*all;
 }				t_p;
 
@@ -40,8 +41,9 @@ typedef struct s_all
 	int				tte;
 	int				tts;
 	int				pme;
-	int				f;
 	long long		start;
+	int				f;
+
 	t_p				*philos;
 }				t_all;
 
