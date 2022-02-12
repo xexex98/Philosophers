@@ -6,7 +6,7 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 15:29:58 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/11 18:59:42 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/02/12 16:32:05 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,104 +16,54 @@ int	ft_error(int err)
 {
 	if (err == 1)
 		printf("Run as: NOP, TTD(ms), TTE(ms), TTS(ms), PME(optional)\n");
-	if (err == 2)
+	else if (err == 2)
 		printf("Malloc error!\n");
-	if (err == 3)
+	else if (err == 3)
 		printf("Incorrect args!\n");
+	else if (err == 4)
+		printf("Ptread error!\n");
+	else if (err == 6)
+		printf("Pthread_mutex_init forks error!\n");
+	else if (err == 7)
+		printf("Pthread_create all->philos[i].tid error!\n");
+	else if (err == 8)
+		printf("Pthread_join all->philos[i].death error!\n");
+	else if (err == 9)
+		printf("Pthread_mutex_lock philos->all->forks[philos->lf] error!\n");
+	else if (err == 10)
+		printf("Pthread_mutex_lock philos->all->forks[philos->rf] error!\n");
+	else if (err == 11)
+		printf("ft_printf(..., STATUS) error!\n");
+	ft_error_2(err);
 	return (-1);
 }
 
-long	ft_atoi(const char *nptr)
+int	ft_error_2(int err)
 {
-	int		i;
-	long	num;
-
-	i = -1;
-	num = 0;
-	if (!nptr)
-		return (0);
-	while (nptr[++i])
-	{
-		num = num * 10 + nptr[i] - '0';
-		if (num > 2147483647 || num < 1)
-			return (-1);
-	}
-	return (num);
-}
-
-int	ft_argv_is_num(char	**argv)
-{
-	int	i;
-	int	j;
-
-	i = 0;
-	j = 1;
-	while (argv[j])
-	{
-		i = 0;
-		while (argv[j][i] != '\0')
-		{
-			if (argv[j][i] < '0' || argv[j][i] > '9' || ft_atoi(argv[j]) == -1)
-				return (-1);
-			i++;
-		}
-		j++;
-	}
-	return (1);
+	if (err == 12)
+		printf("ft_forks_in_hand(philos) error!\n");
+	else if (err == 13)
+		printf("pthread_mutex_lock(&philos->eating) error!\n");
+	else if (err == 14)
+		printf("pthread_mutex_unlock(&philos->eating) error!\n");
+	else if (err == 15)
+		printf("ft_forks_on_the_table(philos) error!\n");
+	else if (err == 16)
+		printf("pthread_mutex_unlock(&philos->all->forks[philos->lf]) error!\n");
+	else if (err == 17)
+		printf("pthread_mutex_unlock(&philos->all->forks[philos->rf]) error!\n");
+	return (-1);
 }
 
 long long	ft_time(void)
 {
-	struct timeval time;
-	
+	struct timeval	time;
+
 	gettimeofday(&time, NULL);
-	
 	return ((long long)time.tv_sec * 1000 + time.tv_usec / 1000);
 }
 
 long long	ft_timestamp(t_all *all)
 {
 	return (ft_time() - all->start);
-}
-
-void	ft_init_all(t_all *all, char **argv)
-{
-
-	all->nop = ft_atoi(argv[1]);
-	all->ttd = ft_atoi(argv[2]);
-	all->tte = ft_atoi(argv[3]);
-	all->tts = ft_atoi(argv[4]);
-	if (argv[5] != NULL)
-		all->pme = ft_atoi(argv[5]);
-	else
-		all->pme = -1;
-	all->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * all->nop);
-	all->f = 0;
-}
-
-int	create_philos(t_all	*all)
-{
-	int		i;
-	
-	all->philos = (t_p *)malloc(sizeof(t_p) * all->nop);
-	if (!all->philos)
-		ft_error(2);
-	i = -1;
-	while (++i < all->nop)
-	{
-		all->philos[i].all = all;
-		all->philos[i].pid = i + 1;
-		all->philos[i].lm = 0;
-		all->philos[i].lf = i;
-		all->philos[i].rf = (i + 1) % all->nop;
-	}
-	return (0);
-}
-
-void	ft_printf(t_all *all, long long time, int pid, char *str)
-{
-	pthread_mutex_lock(&all->print);
-	printf("%lli %i %s\n", time, pid, str);
-	pthread_mutex_unlock(&all->print);
-	return ;
 }
