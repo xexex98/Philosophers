@@ -6,7 +6,7 @@
 #    By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/31 14:18:51 by mbarra            #+#    #+#              #
-#    Updated: 2022/02/12 15:37:36 by mbarra           ###   ########.fr        #
+#    Updated: 2022/02/12 16:37:25 by mbarra           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,22 +33,13 @@ all: $(NAME)
 
 $(NAME): $(OBJ)
 	@$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
-	@$(RM) $(SRC_DIR)/*.o
-
 
 clean:
 	@$(RM) $(OBJ)
 
-f: clean
+fclean: clean
 	@$(RM) $(NAME)
 
-re: f all
+re: fclean all
 
-.PHONY: all clean f re
-
-# OBJ_LIST			=		$(addprefix $(OBJ_DIR)/, $(OBJ_LIST))
-# rm -rf $(OBJ_DIR)
-# @echo $(OBJ)
-# $(OBJ_DIR):
-# mkdir -p $(OBJ_DIR)
-# OBJ_DIR		=		./obj
+.PHONY: all clean fclean re
