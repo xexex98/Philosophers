@@ -6,91 +6,122 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 19:50:05 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/12 16:28:19 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/02/13 01:35:13 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/philo.h"
 
-void	*ft_dead(void *arg)
+void	ft_dead(t_p	*philos)
 {
-	t_p	*philos;
-
-	philos = (t_p *)arg;
-	while (philos->all->f != TIME_TO_DIE)
+	while (philos->all->f && philos->pe != philos->all->pme && philos->all->ttd)
 	{
-		if (philos->all->ttd < ft_time() - philos->lm)
+		pthread_mutex_lock(&philos->all->dead);
+		if (philos->all->ttd < (ft_time() - philos->lm) && philos->all->f)
 		{
-			ft_printf(philos->all, ft_timestamp(philos->all),
+			ft_printf(philos->all, ft_timestamp(philos),
 				philos->pid, DIED);
 			philos->all->f = TIME_TO_DIE;
 		}
-		if (philos->pe == philos->all->pme + 1)
-			philos->all->f = TIME_TO_DIE;
+		pthread_mutex_unlock(&philos->all->dead);
 		usleep(100);
 	}
-	return (NULL);
 }
 
-void	*ft_meal(void *arg)
+void	ft_forks_in_hand(t_p *philos)
 {
-	t_p	*philos;
+	pthread_mutex_lock(&philos->all->forks[philos->lf]);
+	ft_printf(philos->all, ft_timestamp(philos),
+			philos->pid, FORK);
+	pthread_mutex_lock(&philos->all->forks[philos->rf]);
+	ft_printf(philos->all, ft_timestamp(philos),
+			philos->pid, FORK);
+}
 
-	philos = (t_p *)arg;
+void	ft_eat(t_p *philos)
+{
+	ft_forks_in_hand(philos);
+	ft_printf(philos->all, ft_timestamp(philos), philos->pid, EAT);
+	philos->pe++;
 	philos->lm = ft_time();
-	pthread_create(&philos->death, NULL, ft_dead, (void *)philos); //errros
-	usleep(10);
-	while (philos->all->f != TIME_TO_DIE)
+	usleep(philos->all->tte * 1000 - 10000);
+	// while (philos->all->tte > ft_time() - philos->lm)
+	// 	continue ;
+	ft_forks_on_the_table(philos);
+}
+
+void	ft_forks_on_the_table(t_p *philos)
+{
+	pthread_mutex_unlock(&philos->all->forks[philos->lf]);
+	pthread_mutex_unlock(&philos->all->forks[philos->rf]);
+}
+
+void	ft_sleep(t_p *philos)
+{
+	// long long	start_sleep;
+
+	ft_printf(philos->all, ft_timestamp(philos),
+			philos->pid, SLEEP);
+	usleep(philos->all->tts * 1000 - 10000);
+	// start_sleep = ft_time();
+	// while (philos->all->tts > ft_time() - start_sleep)
+	// 	continue ;
+}
+
+void	ft_think(t_p *philos)
+{
+	ft_printf(philos->all, ft_timestamp(philos),
+			philos->pid, THINK);
+}
+
+
+void	ft_meal(t_p	*philos)
+{
+	philos->lm = ft_time();
+	pthread_create(&philos->death, NULL, (void *)ft_dead, philos);
+	while (philos->all->f == 1 && philos->pe != philos->all->pme && philos->all->f)
 	{
 		ft_eat(philos);
+		// if (philos->pe == philos->all->pme)
+		// 	break ;
 		ft_sleep(philos);
 		ft_think(philos);
-		usleep(10);
 	}
-	return (NULL);
+	pthread_join(philos->death, NULL);
 }
 
-int	ft_philo_is_thread(t_all *all)
+int	ft_philo_is_thread(t_all *all, t_p *philos)
 {
 	int	i;
-	int	check;
 
 	i = -1;
 	while (++i < all->nop)
 	{
-		check = pthread_mutex_init(&all->forks[i], NULL);
-		if (check != 0)
-			return (ft_error(6));
+		philos->all->start = ft_time();
+		usleep(100);
+		pthread_create(&philos[i].tid, NULL, (void *)ft_meal, &philos[i]);
 	}
-	all->start = ft_time();
 	i = -1;
 	while (++i < all->nop)
-	{
-		check = pthread_create(&all->philos[i].tid, NULL,
-				ft_meal, (void *)&all->philos[i]);
-		if (check != 0)
-			return (ft_error(7));
-		usleep(100);
-	}
-	check = pthread_join(all->philos->death, NULL);
-	if (check != 0)
-		return (ft_error(8));
+		pthread_join(philos[i].tid, NULL);
 	return (0);
 }
 
 int	main(int argc, char **argv)
 {
+	t_p		*philos;
 	t_all	all;
 
+	philos = NULL;
 	if (argc < 5 || argc > 6)
 		return (ft_error(1));
 	if (ft_argv_is_num(argv) < 0)
 		return (ft_error(3));
 	ft_init_all(&all, argv);
-	if (create_philos(&all) < 0)
-		return (ft_error(2));
-	ft_philo_is_thread(&all);
-	if (ft_philo_is_thread(&all) == -1)
-		return (ft_error(4));
+	philos = malloc(sizeof(*philos) * all.nop);
+	create_philos(philos, &all);
+	ft_philo_is_thread(&all, philos);
+	free(philos);
+	free(philos->all->forks);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 15:29:58 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/12 16:32:05 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/02/13 01:22:49 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,12 +58,14 @@ int	ft_error_2(int err)
 long long	ft_time(void)
 {
 	struct timeval	time;
+	long long	ms;
 
 	gettimeofday(&time, NULL);
-	return ((long long)time.tv_sec * 1000 + time.tv_usec / 1000);
+	ms = time.tv_sec * 1000 + time.tv_usec / 1000;
+	return (ms);
 }
 
-long long	ft_timestamp(t_all *all)
+long long	ft_timestamp(t_p *philos)
 {
-	return (ft_time() - all->start);
+	return (ft_time() - philos->all->start);
 }
