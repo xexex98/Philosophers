@@ -6,7 +6,7 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 19:50:05 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/20 15:25:26 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/02/20 15:46:16 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,15 +31,24 @@ void	ft_dead(t_p	*philos)
 void	ft_meal(t_p	*philos)
 {
 	philos->lm = ft_time();
-	pthread_create(&philos->death, NULL, (void *)ft_dead, philos);
-	while (philos->all->f == 1 && philos->pe != philos->all->pme
-		&& philos->all->f)
+	if (philos->all->nop == 1)
 	{
-		ft_eat(philos);
-		ft_sleep(philos);
-		ft_think(philos);
+		ft_printf(philos->all, ft_timestamp(philos), philos->pid, FORK);
+		usleep(philos->all->ttd * 1000);
+		ft_printf(philos->all, ft_timestamp(philos), philos->pid, DIED);
 	}
-	pthread_join(philos->death, NULL);
+	else
+	{
+		pthread_create(&philos->death, NULL, (void *)ft_dead, philos);
+		while (philos->all->f == 1 && philos->pe != philos->all->pme
+			&& philos->all->f)
+		{
+			ft_eat(philos);
+			ft_sleep(philos);
+			ft_think(philos);
+		}
+		pthread_join(philos->death, NULL);
+	}
 }
 
 int	ft_philo_is_thread(t_all *all, t_p *philos)
