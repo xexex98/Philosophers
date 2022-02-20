@@ -30,66 +30,25 @@ long	ft_atoi(const char *nptr)
 	return (num);
 }
 
-int	ft_argv_is_num(char	**argv)
+int	ft_argv_is_num(int argc, char	**argv)
 {
 	int	i;
 	int	j;
 
 	i = 0;
 	j = 1;
+	if (argc < 5 || argc > 6)
+		return (ft_error(1));
 	while (argv[j])
 	{
 		i = 0;
 		while (argv[j][i] != '\0')
 		{
 			if (argv[j][i] < '0' || argv[j][i] > '9' || ft_atoi(argv[j]) == -1)
-				return (-1);
+				return (ft_error(3));
 			i++;
 		}
 		j++;
 	}
 	return (1);
-}
-
-void	ft_init_all(t_all *all, char **argv)
-{
-	all->nop = ft_atoi(argv[1]);
-	all->ttd = ft_atoi(argv[2]);
-	all->tte = ft_atoi(argv[3]);
-	all->tts = ft_atoi(argv[4]);
-	if (argv[5] != NULL)
-		all->pme = ft_atoi(argv[5]);
-	else
-		all->pme = -1;
-	all->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * all->nop);
-	if (!all->forks)
-		ft_error(2);
-	all->f = 1;
-}
-
-void	create_philos(t_p *philos, t_all *all)
-{
-	int		i;
-
-	i = -1;
-	while (++i < all->nop)
-	{
-		philos[i].pid = i + 1;
-		philos[i].pe = 0;
-		philos[i].all = all;
-		philos[i].lf = i;
-		philos[i].rf = (i + 1) % all->nop;
-		pthread_mutex_init(&all->forks[i], NULL);
-	}
-	pthread_mutex_init(&all->print, NULL);
-	pthread_mutex_init(&all->dead, NULL);
-}
-
-int	ft_printf(t_all *all, long long time, int pid, char *str)
-{
-	pthread_mutex_lock(&all->print);
-	if (all->f)
-		printf("%lli %i %s\n", time, pid, str);
-	pthread_mutex_unlock(&all->print);
-	return (0);
 }
