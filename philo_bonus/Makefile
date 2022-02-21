@@ -6,11 +6,11 @@
 #    By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/31 14:18:51 by mbarra            #+#    #+#              #
-#    Updated: 2022/02/21 17:54:53 by mbarra           ###   ########.fr        #
+#    Updated: 2022/02/21 17:28:15 by mbarra           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME		=		philo
+NAME		=		philo_bonus
 
 HDR			=		$(wildcard $(HDR_DIR)/*.h)
 
@@ -24,7 +24,7 @@ OBJ			=		$(patsubst %.c, %.o, $(SRC))
 
 CC			=		gcc
 RM			=		rm -f
-CFLAGS		=		-pthread -Wall -Wextra -Werror -O2
+CFLAGS		=		-pthread #-Wall -Wextra -Werror -O2
 
 %.o: %.c $(HDR)
 	@$(CC) $(CFLAGS) -c $< -o $@
@@ -33,6 +33,7 @@ all: $(NAME)
 
 $(NAME): $(OBJ)
 	@$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
+	@rm src/*.o
 
 clean:
 	@$(RM) $(OBJ)
