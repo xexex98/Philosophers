@@ -45,10 +45,10 @@ int	ft_argv_is_num(int argc, char	**argv)
 		while (argv[j][i] != '\0')
 		{
 			if (argv[j][i] < '0' || argv[j][i] > '9' || ft_atoi(argv[j]) == -1)
-				return (ft_error(3));
+				ft_error(3);
 			i++;
 		}
 		j++;
 	}
-	return (1);
+	return (EXIT_SUCCESS);
 }

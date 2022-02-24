@@ -28,7 +28,7 @@ void	ft_eat(t_p *philos)
 	ft_printf(philos->all, ft_timestamp(philos), philos->pid, EAT);
 	philos->pe++;
 	philos->lm = ft_time();
-	usleep(philos->all->tte * 1000 - 100);
+	ft_usleep(philos->all->tte);
 	ft_forks_on_the_table(philos);
 }
 

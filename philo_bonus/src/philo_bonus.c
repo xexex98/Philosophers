@@ -6,7 +6,7 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 19:50:05 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/21 17:39:40 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/02/24 18:44:20 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,87 +14,85 @@
 
 void	ft_dead(t_p	*philos)
 {
-	while (philos->all->f && philos->pe != philos->all->pme && philos->all->ttd)
+	while (1)
 	{
 		sem_wait(philos->all->dead);
-		if (philos->all->ttd < (ft_time() - philos->lm) && philos->all->f)
+		usleep(100);
+		if (philos->all->ttd < ft_time() - philos->lm)
 		{
 			ft_printf(philos->all, ft_timestamp(philos),
 				philos->pid, DIED);
 			philos->all->f = TIME_TO_DIE;
+			exit(EXIT_SUCCESS);
+		}
+		if (philos->all->pme != -1 && philos->pe >= philos->all->pme)
+		{
+			philos->all->f = TIME_TO_DIE;
+			exit(EXIT_SUCCESS);
+
 		}
 		sem_post(philos->all->dead);
-		usleep(100);
 	}
 }
 
 void	ft_meal(t_p	*philos)
 {
-	philos->lm = ft_time();
-	if (philos->all->nop == 1)
+	pthread_create(&philos->all->death, NULL, (void *)ft_dead, philos);
+	while (1)
 	{
-		ft_printf(philos->all, ft_timestamp(philos), philos->pid, FORK);
-		usleep(philos->all->ttd * 1000);
-		ft_printf(philos->all, ft_timestamp(philos), philos->pid, DIED);
+		ft_eat(philos);
+		ft_sleep(philos);
+		ft_think(philos);
 	}
-	else
+	pthread_join(philos->all->death, NULL);
+}
+
+void	ft_philo_is_thread(t_all *all)
+{
+	t_p	philos;
+	int	i;
+
+	i = -1;
+	all->start = ft_time();
+	while (++i < all->nop)
 	{
-		pthread_create(&philos->death, NULL, (void *)ft_dead, philos);
-		while (philos->all->f == 1 && philos->pe != philos->all->pme
-			&& philos->all->f)
+		all->f_philo[i] = fork();
+		if (all->f_philo[i] == -1)
 		{
-			ft_eat(philos);
-			ft_sleep(philos);
-			ft_think(philos);
+			while (--i >= 0)
+				kill(all->f_philo[i], SIGKILL);
+			ft_error(5);
 		}
-		pthread_join(philos->death, NULL);
+		if (all->f_philo[i] == 0)
+		{
+			philos.pid = i + 1;
+			philos.lm = ft_time();
+			philos.pe = 0;
+			philos.all = all;
+			ft_meal(&philos);
+		}
+		usleep(100);
 	}
 }
 
-int	ft_philo_is_thread(t_all *all, t_p *philos)
+void ft_exit(t_all *all)
 {
 	int	i;
 
 	i = -1;
 	while (++i < all->nop)
-	{
-		philos[i].f_philo = fork();
-		// printf("%i\n", philos[i].f_philo);
-		if (philos[i].f_philo < 0)
-		{
-			kill(philos[i].f_philo, SIGKILL);
-		}
-		else if (philos[i].f_philo == 0)
-		{
-			philos->all->start = ft_time();
-			usleep(100);
-			pthread_create(&philos[i].tid, NULL, (void *)ft_meal, &philos[i]);
-		}
-	}
-	i = -1;
-	while (++i < all->nop)
-		pthread_join(philos[i].tid, NULL);
-	return (0);
+		kill(all->f_philo[i], SIGKILL);
 }
 
 int	main(int argc, char **argv)
 {
-	t_p		*philos;
 	t_all	all;
 
-	philos = NULL;
-	if (ft_argv_is_num(argc, argv) < 0)
-		return (-1);
-	if (ft_init_all(&all, argv) < 0)
-		return (-1);
-	philos = malloc(sizeof(*philos) * all.nop);
-	if (!philos)
-	{
-		ft_free(philos, &all, 0);
-		return (ft_error(2));
-	}
-	create_philos(philos, &all);
-	ft_philo_is_thread(&all, philos);
-	ft_free(philos, &all, 1);
-	return (0);
+	ft_argv_is_num(argc, argv);
+	ft_init_all(&all, argv);
+	ft_philo_is_thread(&all);
+	ft_exit(&all);
+	return (EXIT_SUCCESS);
 }
+
+// ft_free(philos, &all, 1);

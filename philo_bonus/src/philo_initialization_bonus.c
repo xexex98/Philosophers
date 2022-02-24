@@ -6,13 +6,13 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/20 13:08:01 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/21 17:17:55 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/02/24 17:45:27 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/philo_bonus.h"
 
-int	ft_init_all(t_all *all, char **argv)
+void	ft_init_all(t_all *all, char **argv)
 {
 	all->nop = ft_atoi(argv[1]);
 	all->ttd = ft_atoi(argv[2]);
@@ -26,30 +26,16 @@ int	ft_init_all(t_all *all, char **argv)
 	sem_unlink(SEM_FORKS);
 	all->forks  = sem_open(SEM_FORKS, O_CREAT, 0660, all->nop);
 	if (all->forks == SEM_FAILED)
-		return(ft_error(4));
+		ft_error(4);
 	sem_unlink(SEM_PRINT);
 	all->print  = sem_open(SEM_PRINT, O_CREAT, 0660, 1);
 	if (all->print == SEM_FAILED)
-		return (ft_error(4));
+		ft_error(4);
 	sem_unlink(SEM_DEAD);
 	all->dead  = sem_open(SEM_DEAD, O_CREAT, 0660, 1);
 	if (all->dead == SEM_FAILED)
-		return(ft_error(4));
-	return (1);
-}
-
-int	create_philos(t_p *philos, t_all *all)
-{
-	int		i;
-
-	i = -1;
-	while (++i < all->nop)
-	{
-		philos[i].pid = i + 1;
-		philos[i].pe = 0;
-		philos[i].all = all;
-		philos[i].lf = i;
-		philos[i].rf = (i + 1) % all->nop;
-	}
-	return (1);
+		ft_error(4);
+	all->f_philo = malloc(sizeof(pid_t) * all->nop);
+	if (!all->f_philo)
+		ft_error(2);
 }
