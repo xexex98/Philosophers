@@ -6,7 +6,7 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 15:29:58 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/24 16:44:16 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/03/02 19:54:52 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int	ft_error(int err)
 {
 	if (err == 1)
-		printf("Run as: NOP, TTD(ms), TTE(ms), TTS(ms), PME(optional)\n");
+		printf(START);
 	else if (err == 2)
 		printf("Malloc error!\n");
 	else if (err == 3)
@@ -24,47 +24,59 @@ int	ft_error(int err)
 		printf("Semaphore init error!\n");
 	else if (err == 5)
 		printf("Fork error!\n");
-	exit(EXIT_FAILURE);
+	exit(EXIT_SUCCESS);
 }
 
 long long	ft_time(void)
 {
 	struct timeval	time;
-	long long		millisec;
 
 	gettimeofday(&time, NULL);
-	millisec = time.tv_sec * 1000 + time.tv_usec / 1000;
-	return (millisec);
+	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
 
-long long	ft_timestamp(t_p *philos)
-{
-	return (ft_time() - philos->all->start);
-}
-
-void	ft_printf(t_all *all, long long time, int pid, char *str)
+void	ft_printf(t_all *all, int pid, char *str)
 {
 	sem_wait(all->print);
-	if (all->f)
-		printf("%lli %i %s\n", time, pid, str);
+	if (!all->stop)
+		printf("%lli %i %s\n", ft_time() - all->start, pid, str);
 	sem_post(all->print);
 }
 
-void	ft_usleep(long long argv)
+void	ft_usleep(t_all *all, long long argv)
 {
 	long long	time;
 
 	time = ft_time();
-	while (argv > ft_time() - time)
-		usleep(100);
+	while (!all->stop)
+	{
+		if (ft_time() - time >= argv)
+			break ;
+		usleep(500);
+	}
 }
 
-void	ft_free(t_p *philos, t_all *all, int flag)
+void	ft_exit(t_all *all)
 {
+	int	status;
 	int	i;
 
+	status = 0;
 	i = -1;
-
-	// free(philos->all->forks);
-	// free(philos);
+	while (++i < all->nop)
+	{
+		waitpid(-1, &status, 0);
+		if (status != 0)
+		{
+			i = -1;
+			while (++i < all->nop)
+				kill(all->f_philo[i], SIGKILL);
+			break ;
+		}
+	}	
+	sem_close(all->forks);
+	sem_close(all->print);
+	sem_unlink(SEM_FORKS);
+	sem_unlink(SEM_PRINT);
+	free(all->f_philo);
 }

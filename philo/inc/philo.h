@@ -6,7 +6,7 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 14:36:23 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/20 15:09:00 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/03/02 20:05:59 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 # include <pthread.h>
 # include <sys/time.h>
 
+# define START "Run as: NOP[max 200], TTD(ms)[min 60], TTE(ms)[min 60],\
+	TTS(ms)[min 60], PME(optional)[min 1]\n"
 # define FORK "\e[33mhas taken a fork\e[0m"
 # define EAT "\e[32mis eating\e[0m"
 # define SLEEP "\e[35mis sleeping\e[0m"
@@ -55,20 +57,15 @@ typedef struct s_p
 
 long		ft_atoi(const char *nptr);
 int			ft_argv_is_num(int argc, char	**argv);
+int			ft_error(int err);
 
 int			ft_init_all(t_all *all, char **argv);
 int			create_philos(t_p *philos, t_all *all);
 
-void		ft_forks_in_hand(t_p *philos);
-void		ft_eat(t_p *philos);
-void		ft_forks_on_the_table(t_p *philos);
-void		ft_sleep(t_p *philos);
-void		ft_think(t_p *philos);
-
-int			ft_error(int err);
 long long	ft_time(void);
 long long	ft_timestamp(t_p *philos);
-int			ft_printf(t_all *all, long long time, int pid, char *str);
+void		ft_printf(t_all *all, long long time, int pid, char *str);
+void		ft_usleep(long long argv);
 void		ft_free(t_p *philos, t_all *all, int flag);
 
 void		ft_dead(t_p	*philos);

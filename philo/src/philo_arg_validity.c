@@ -50,5 +50,19 @@ int	ft_argv_is_num(int argc, char	**argv)
 		}
 		j++;
 	}
+	if (ft_atoi(argv[1]) > 200 || ft_atoi(argv[2]) < 60
+		|| ft_atoi(argv[3]) < 60 || ft_atoi(argv[4]) < 60)
+		return (ft_error(1));
 	return (1);
+}
+
+int	ft_error(int err)
+{
+	if (err == 1)
+		printf(START);
+	else if (err == 2)
+		printf("Malloc error!\n");
+	else if (err == 3)
+		printf("Incorrect args!\n");
+	return (-1);
 }

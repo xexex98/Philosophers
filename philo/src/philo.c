@@ -6,7 +6,7 @@
 /*   By: mbarra <mbarra@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/31 19:50:05 by mbarra            #+#    #+#             */
-/*   Updated: 2022/02/20 15:46:16 by mbarra           ###   ########.fr       */
+/*   Updated: 2022/03/02 18:58:28 by mbarra           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,41 +14,43 @@
 
 void	ft_dead(t_p	*philos)
 {
-	while (philos->all->f && philos->pe != philos->all->pme && philos->all->ttd)
+	while (philos->all->f && philos->pe != philos->all->pme)
 	{
+		usleep(100);
 		pthread_mutex_lock(&philos->all->dead);
-		if (philos->all->ttd < (ft_time() - philos->lm) && philos->all->f)
+		if (philos->all->ttd < ft_time() - philos->lm)
 		{
-			ft_printf(philos->all, ft_timestamp(philos),
-				philos->pid, DIED);
+			ft_printf(philos->all, ft_timestamp(philos), philos->pid, DIED);
 			philos->all->f = TIME_TO_DIE;
 		}
 		pthread_mutex_unlock(&philos->all->dead);
-		usleep(100);
 	}
 }
 
 void	ft_meal(t_p	*philos)
 {
 	philos->lm = ft_time();
-	if (philos->all->nop == 1)
+	pthread_create(&philos->death, NULL, (void *)ft_dead, philos);
+	ft_printf(philos->all, ft_timestamp(philos), philos->pid, THINK);
+	while (philos->all->f == 1 && philos->pe != philos->all->pme)
 	{
+		pthread_mutex_lock(&philos->all->forks[philos->lf]);
 		ft_printf(philos->all, ft_timestamp(philos), philos->pid, FORK);
-		usleep(philos->all->ttd * 1000);
-		ft_printf(philos->all, ft_timestamp(philos), philos->pid, DIED);
+		if (philos->all->nop == 1)
+			break ;
+		pthread_mutex_lock(&philos->all->forks[philos->rf]);
+		ft_printf(philos->all, ft_timestamp(philos), philos->pid, FORK);
+		ft_printf(philos->all, ft_timestamp(philos), philos->pid, EAT);
+		philos->pe++;
+		philos->lm = ft_time();
+		ft_usleep(philos->all->tte);
+		pthread_mutex_unlock(&philos->all->forks[philos->lf]);
+		pthread_mutex_unlock(&philos->all->forks[philos->rf]);
+		ft_printf(philos->all, ft_timestamp(philos), philos->pid, SLEEP);
+		ft_usleep(philos->all->tts);
+		ft_printf(philos->all, ft_timestamp(philos), philos->pid, THINK);
 	}
-	else
-	{
-		pthread_create(&philos->death, NULL, (void *)ft_dead, philos);
-		while (philos->all->f == 1 && philos->pe != philos->all->pme
-			&& philos->all->f)
-		{
-			ft_eat(philos);
-			ft_sleep(philos);
-			ft_think(philos);
-		}
-		pthread_join(philos->death, NULL);
-	}
+	pthread_join(philos->death, NULL);
 }
 
 int	ft_philo_is_thread(t_all *all, t_p *philos)
